@@ -21,6 +21,16 @@ func main() {
 		},
 		HideHelpCommand: true,
 		Action: func(c *cli.Context) error {
+			file, fileerrerr := os.OpenFile("output.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+			if fileerrerr != nil {
+				return fileerrerr
+			}
+			defer func(file *os.File) {
+				err := file.Close()
+				if err != nil {
+
+				}
+			}(file)
 		start:
 			host := ""
 			_, err := fmt.Scanln(&host)
@@ -35,18 +45,12 @@ func main() {
 				ret := goreq.Do(req)
 				if strings.Contains(ret.Text, host) {
 					println(proxyStr)
-					file, err := os.OpenFile("output.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-					if err != nil {
-						return err
-					}
+
 					_, writeerr := file.WriteString(proxyStr + "\n")
 					if writeerr != nil {
 						return writeerr
 					}
-					closeerr := file.Close()
-					if closeerr != nil {
-						return closeerr
-					}
+
 				}
 			}
 
