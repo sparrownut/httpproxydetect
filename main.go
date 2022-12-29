@@ -35,6 +35,18 @@ func main() {
 				ret := goreq.Do(req)
 				if strings.Contains(ret.Text, host) {
 					println(proxyStr)
+					file, err := os.OpenFile("output.txt", os.O_APPEND|os.O_CREATE, 0666)
+					if err != nil {
+						return err
+					}
+					_, writeerr := file.WriteString(proxyStr + "\n")
+					if writeerr != nil {
+						return writeerr
+					}
+					closeerr := file.Close()
+					if closeerr != nil {
+						return closeerr
+					}
 				}
 			}
 
