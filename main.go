@@ -26,7 +26,7 @@ func main() {
 		Action: func(c *cli.Context) error {
 			err := do(port, protocol)
 			if err != nil {
-				return err
+
 			}
 			return nil
 		},
@@ -55,7 +55,7 @@ start: // 在这里循环
 	host := ""
 	_, err := fmt.Scanln(&host)
 	if err != nil {
-		return err
+
 	}
 	go func() {
 		err := dofunc(port, protocol, file, host)
@@ -94,11 +94,11 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 			}
 		}(dial)
 		if err != nil {
-			return err
+
 		}
 		_, err = dial.Write([]byte("")) // 发送空消息
 		if err != nil {
-			return err
+
 		}
 		buf := [512]byte{}
 		n, err := dial.Read(buf[:])
@@ -107,7 +107,7 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 			println(host)
 			_, writeerr := file.WriteString("[SSH]" + host + ":" + port + "\n")
 			if writeerr != nil {
-				return writeerr
+
 			}
 		}
 	} else if protocol == "mysql" {
@@ -119,11 +119,9 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 			}
 		}(dial)
 		if err != nil {
-			return err
 		}
 		_, err = dial.Write([]byte("")) // 发送空消息
 		if err != nil {
-			return err
 		}
 		buf := [512]byte{}
 		n, err := dial.Read(buf[:])
@@ -132,7 +130,6 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 			println(host)
 			_, writeerr := file.WriteString("[mysql]" + host + ":" + port + "\n")
 			if writeerr != nil {
-				return writeerr
 			}
 		}
 	} else {
