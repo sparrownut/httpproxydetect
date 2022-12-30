@@ -87,6 +87,12 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		//return nil
 	} else if protocol == "ssh" {
 		dial, err := net.Dial("tcp", host+":"+port)
+		defer func(dial net.Conn) {
+			err := dial.Close()
+			if err != nil {
+
+			}
+		}(dial)
 		if err != nil {
 			return err
 		}
@@ -106,6 +112,12 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		}
 	} else if protocol == "mysql" {
 		dial, err := net.Dial("tcp", host+":"+port)
+		defer func(dial net.Conn) {
+			err := dial.Close()
+			if err != nil {
+
+			}
+		}(dial)
 		if err != nil {
 			return err
 		}
