@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var DBG bool
+
 func main() {
 	port := "8080"
 	protocol := "http"
@@ -17,11 +19,11 @@ func main() {
 		Name:      "protocaldetect",
 		Usage:     "judg protocol\n protocol:\nhttp\nssh\nmysql", // 这里写协议
 		UsageText: "lazy to write...",
-		Version:   "0.4.6",
+		Version:   "0.4.7",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "8080", Usage: "port", Required: true},
-			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "8080", Usage: "protocol", Required: true},
-			&cli.BoolFlag{Name: "DBG", Aliases: []string{"DBG"}, Destination: &DBG, Value: false, Usage: "DBG MOD", Required: false},
+			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "ssh", Usage: "protocol", Required: true},
+			&cli.BoolFlag{Name: "DBG", Aliases: []string{"D"}, Destination: &DBG, Value: false, Usage: "DBG MOD", Required: false},
 		},
 		HideHelpCommand: true,
 		Action: func(c *cli.Context) error {
