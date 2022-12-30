@@ -21,6 +21,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "8080", Usage: "port", Required: true},
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "8080", Usage: "protocol", Required: true},
+			&cli.BoolFlag{Name: "DBG", Aliases: []string{"DBG"}, Destination: &DBG, Value: false, Usage: "DBG MOD", Required: false},
 		},
 		HideHelpCommand: true,
 		Action: func(c *cli.Context) error {
@@ -58,7 +59,10 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("recover value is", r)
+			if DBG {
+				fmt.Println("recover value is", r)
+				fmt.Printf("ERROR INFO host:%v", host)
+			}
 		}
 	}()
 	if protocol == "http" {
