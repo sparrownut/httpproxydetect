@@ -17,7 +17,7 @@ func main() {
 		Name:      "protocaldetect",
 		Usage:     "judg protocol\n protocol:\nhttp\nssh\nmysql", // 这里写协议
 		UsageText: "lazy to write...",
-		Version:   "0.4.4",
+		Version:   "0.4.5",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "8080", Usage: "port", Required: true},
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "8080", Usage: "protocol", Required: true},
@@ -33,7 +33,7 @@ func main() {
 	}
 	err := app.Run(os.Args)
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 
 	//fmt.Printf(os.Args[1])
@@ -111,26 +111,20 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 			}
 		}
 	} else if protocol == "mysql" {
-		dial, err := net.Dial("tcp", host+":"+port)
+		dial, _ := net.Dial("tcp", host+":"+port)
 		defer func(dial net.Conn) {
 			err := dial.Close()
 			if err != nil {
 
 			}
 		}(dial)
-		if err != nil {
-		}
-		_, err = dial.Write([]byte("")) // 发送空消息
-		if err != nil {
-		}
+		_, _ = dial.Write([]byte("")) // 发送空消息
 		buf := [512]byte{}
-		n, err := dial.Read(buf[:])
+		n, _ := dial.Read(buf[:])
 		//println(string(buf[:n]))
 		if strings.Contains(string(buf[:n]), "mysql") {
 			println(host)
-			_, writeerr := file.WriteString("[mysql]" + host + ":" + port + "\n")
-			if writeerr != nil {
-			}
+			_, _ = file.WriteString("[mysql]" + host + ":" + port + "\n")
 		}
 	} else {
 		fmt.Printf("无此协议")
