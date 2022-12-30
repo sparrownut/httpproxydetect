@@ -15,7 +15,7 @@ func main() {
 	protocol := "http"
 	app := &cli.App{
 		Name:      "protocaldetect",
-		Usage:     "judg protocal can use protocol:\nhttp\nssh\nmysql", // 这里写协议
+		Usage:     "judg protocol\n protocol:\nhttp\nssh\nmysql", // 这里写协议
 		UsageText: "lazy to write...",
 		Version:   "0.4.4",
 		Flags: []cli.Flag{
