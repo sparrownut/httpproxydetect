@@ -17,7 +17,7 @@ func main() {
 		Name:      "protocaldetect",
 		Usage:     "judg protocol\n protocol:\nhttp\nssh\nmysql", // 这里写协议
 		UsageText: "lazy to write...",
-		Version:   "0.4.5",
+		Version:   "0.4.6",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "8080", Usage: "port", Required: true},
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "8080", Usage: "protocol", Required: true},
@@ -73,9 +73,6 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		//return nil
 	} else if protocol == "ssh" {
 		dial, _ := net.Dial("tcp", host+":"+port)
-		defer func(dial net.Conn) {
-			_ = dial.Close()
-		}(dial)
 		_, _ = dial.Write([]byte("")) // 发送空消息
 		buf := [512]byte{}
 		n, _ := dial.Read(buf[:])
@@ -84,12 +81,9 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 			println(host)
 			_, _ = file.WriteString("[SSH]" + host + ":" + port + "\n")
 		}
+		_ = dial.Close()
 	} else if protocol == "mysql" {
 		dial, _ := net.Dial("tcp", host+":"+port)
-		defer func(dial net.Conn) {
-			_ = dial.Close()
-
-		}(dial)
 		_, _ = dial.Write([]byte("")) // 发送空消息
 		buf := [512]byte{}
 		n, _ := dial.Read(buf[:])
@@ -98,6 +92,7 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 			println(host)
 			_, _ = file.WriteString("[mysql]" + host + ":" + port + "\n")
 		}
+		_ = dial.Close()
 	} else {
 		fmt.Printf("无此协议")
 		return nil
