@@ -86,16 +86,6 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 
 		//return nil
 	} else if protocol == "ssh" {
-		file, fileerrerr := os.OpenFile("output.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-		if fileerrerr != nil {
-			return fileerrerr
-		}
-		defer func(file *os.File) {
-			err := file.Close()
-			if err != nil {
-
-			}
-		}(file)
 		dial, err := net.Dial("tcp", host+":"+port)
 		if err != nil {
 			return err
@@ -114,6 +104,8 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 				return writeerr
 			}
 		}
+	} else if protocol == "mysql" {
+
 	} else {
 		fmt.Printf("无此协议")
 		return nil
