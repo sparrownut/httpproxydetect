@@ -72,23 +72,41 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 
 		//return nil
 	} else if protocol == "ssh" {
-		dial, _ := net.Dial("tcp", host+":"+port)
+		dial, dialerr := net.Dial("tcp", host+":"+port)
+		if dialerr != nil {
+			recover()
+		}
 		buf := [512]byte{}
-		n, _ := dial.Read(buf[:])
+		n, err := dial.Read(buf[:])
+		if err != nil {
+			recover()
+		}
 		//println(string(buf[:n]))
 		if strings.Contains(string(buf[:n]), "SSH") {
 			println(host)
-			_, _ = file.WriteString("[SSH]" + host + ":" + port + "\n")
+			_, fileerr := file.WriteString("[SSH]" + host + ":" + port + "\n")
+			if fileerr != nil {
+				recover()
+			}
 		}
 		_ = dial.Close()
 	} else if protocol == "mysql" {
-		dial, _ := net.Dial("tcp", host+":"+port)
+		dial, dialerr := net.Dial("tcp", host+":"+port)
+		if dialerr != nil {
+			recover()
+		}
 		buf := [512]byte{}
-		n, _ := dial.Read(buf[:])
+		n, err := dial.Read(buf[:])
+		if err != nil {
+			recover()
+		}
 		//println(string(buf[:n]))
 		if strings.Contains(string(buf[:n]), "mysql") {
 			println(host)
-			_, _ = file.WriteString("[MYSQL]" + host + ":" + port + "\n")
+			_, fileerr := file.WriteString("[MYSQL]" + host + ":" + port + "\n")
+			if fileerr != nil {
+				recover()
+			}
 		}
 		_ = dial.Close()
 	} else {
