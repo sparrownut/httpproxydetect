@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/httpproxydetect.iml" filepath="$PROJECT_DIR$/.idea/httpproxydetect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/protocoldetect.iml" filepath="$PROJECT_DIR$/.idea/protocoldetect.iml" />
     </modules>
   </component>
 </project>
