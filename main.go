@@ -40,28 +40,17 @@ func main() {
 
 }
 func do(port string, protocol string) error {
-	file, fileerrerr := os.OpenFile("output.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	if fileerrerr != nil {
-		return fileerrerr
-	}
+	file, _ := os.OpenFile("output.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-
-		}
+		_ = file.Close()
 	}(file)
 	// 文件初始化
 start: // 在这里循环
 	host := ""
-	_, err := fmt.Scanln(&host)
-	if err != nil {
+	_, _ = fmt.Scanln(&host)
 
-	}
 	go func() {
-		err := dofunc(port, protocol, file, host)
-		if err != nil {
-
-		}
+		_ = dofunc(port, protocol, file, host)
 	}()
 	goto start
 }
@@ -76,47 +65,30 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 			ret := goreq.Do(req)
 			if strings.Contains(ret.Text, host) {
 				println(proxyStr) // 输出
-				_, writeerr := file.WriteString(proxyStr + "\n")
-				if writeerr != nil {
-					return writeerr
-				}
+				_, _ = file.WriteString(proxyStr + "\n")
 
 			}
 		}
 
 		//return nil
 	} else if protocol == "ssh" {
-		dial, err := net.Dial("tcp", host+":"+port)
+		dial, _ := net.Dial("tcp", host+":"+port)
 		defer func(dial net.Conn) {
-			err := dial.Close()
-			if err != nil {
-
-			}
+			_ = dial.Close()
 		}(dial)
-		if err != nil {
-
-		}
-		_, err = dial.Write([]byte("")) // 发送空消息
-		if err != nil {
-
-		}
+		_, _ = dial.Write([]byte("")) // 发送空消息
 		buf := [512]byte{}
-		n, err := dial.Read(buf[:])
+		n, _ := dial.Read(buf[:])
 		//println(string(buf[:n]))
 		if strings.Contains(string(buf[:n]), "SSH") {
 			println(host)
-			_, writeerr := file.WriteString("[SSH]" + host + ":" + port + "\n")
-			if writeerr != nil {
-
-			}
+			_, _ = file.WriteString("[SSH]" + host + ":" + port + "\n")
 		}
 	} else if protocol == "mysql" {
 		dial, _ := net.Dial("tcp", host+":"+port)
 		defer func(dial net.Conn) {
-			err := dial.Close()
-			if err != nil {
+			_ = dial.Close()
 
-			}
 		}(dial)
 		_, _ = dial.Write([]byte("")) // 发送空消息
 		buf := [512]byte{}
