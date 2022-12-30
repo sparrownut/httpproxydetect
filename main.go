@@ -73,7 +73,6 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		//return nil
 	} else if protocol == "ssh" {
 		dial, _ := net.Dial("tcp", host+":"+port)
-		_, _ = dial.Write([]byte("")) // 发送空消息
 		buf := [512]byte{}
 		n, _ := dial.Read(buf[:])
 		//println(string(buf[:n]))
@@ -84,13 +83,12 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		_ = dial.Close()
 	} else if protocol == "mysql" {
 		dial, _ := net.Dial("tcp", host+":"+port)
-		_, _ = dial.Write([]byte("")) // 发送空消息
 		buf := [512]byte{}
 		n, _ := dial.Read(buf[:])
 		//println(string(buf[:n]))
 		if strings.Contains(string(buf[:n]), "mysql") {
 			println(host)
-			_, _ = file.WriteString("[mysql]" + host + ":" + port + "\n")
+			_, _ = file.WriteString("[MYSQL]" + host + ":" + port + "\n")
 		}
 		_ = dial.Close()
 	} else {
