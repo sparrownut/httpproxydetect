@@ -61,6 +61,9 @@ start: // 在这里循环
 }
 func dofunc(port string, protocol string, file *os.File, host string) error {
 	threads++ // 线程+1
+	if DBG {
+		println(fmt.Sprintf("当前进程%v个", threads))
+	}
 	timeout := 3 * time.Second
 	defer func() {
 		if r := recover(); r != nil {
