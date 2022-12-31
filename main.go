@@ -61,23 +61,25 @@ start: // 在这里循环
 }
 func dofunc(port string, protocol string, file *os.File, host string) error {
 	threads++ // 线程+1
-	if DBG {
-		println(fmt.Sprintf("当前进程%v个", threads))
-	}
-	timeout := 3 * time.Second
 	defer func() {
+		threads--
 		if r := recover(); r != nil {
 			if DBG {
 				fmt.Println("recover value is", r)
 				fmt.Printf("ERROR INFO host:%v", host)
 			}
 		}
-	}()
+	}() //清理线程计数 处理异常
+	if DBG {
+		println(fmt.Sprintf("当前进程%v个", threads))
+	}
+	timeout := 2 * time.Second
+
 	if protocol == "http" {
 
 		proxyStr := "http://" + host + ":" + port
 		client := goreq.NewClient()
-		req := goreq.Get("http://icanhazip.com/").SetClient(client).SetProxy(proxyStr).SetTimeout(5 * time.Second)
+		req := goreq.Get("http://icanhazip.com/").SetClient(client).SetProxy(proxyStr).SetTimeout(timeout)
 		//fmt.Printf(proxyStr)
 		if req.Err == nil {
 			ret := goreq.Do(req)
@@ -93,7 +95,6 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		_ = dial.SetReadDeadline(time.Now().Add(timeout))
 		if connecterr != nil {
 		}
-
 		buf := [64]byte{}
 		n, _ := dial.Read(buf[:])
 
@@ -106,10 +107,8 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 	} else if protocol == "mysql" {
 		dial, _ := net.Dial("tcp", host+":"+port)
 		_ = dial.SetReadDeadline(time.Now().Add(timeout))
-		buf := [512]byte{}
+		buf := [64]byte{}
 		n, _ := dial.Read(buf[:])
-
-		//println(string(buf[:n]))
 		if strings.Contains(string(buf[:n]), "mysql") {
 			fmt.Printf(host + "\n")
 			_, _ = file.WriteString("[MYSQL]" + host + ":" + port + "\n")
@@ -119,6 +118,6 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 	} else {
 		println("无此协议")
 	}
-	threads-- // 线程-1
+
 	return nil
 }
