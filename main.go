@@ -11,6 +11,7 @@ import (
 )
 
 var DBG bool
+var threads = 0
 
 func main() {
 	port := "8080"
@@ -53,12 +54,14 @@ start: // 在这里循环
 	_, _ = fmt.Scanln(&host)
 
 	go func() {
+
 		_ = dofunc(port, protocol, file, host)
 	}()
 	goto start
 }
 func dofunc(port string, protocol string, file *os.File, host string) error {
-
+	threads++ // 线程+1
+	timeout := 3 * time.Second
 	defer func() {
 		if r := recover(); r != nil {
 			if DBG {
@@ -82,14 +85,15 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 			}
 		}
 
-		//return nil
 	} else if protocol == "ssh" {
-		dial, _ := net.Dial("tcp", host+":"+port)
+		dial, connecterr := net.Dial("tcp", host+":"+port)
+		_ = dial.SetReadDeadline(time.Now().Add(timeout))
+		if connecterr != nil {
+		}
 
-		buf := [512]byte{}
+		buf := [64]byte{}
 		n, _ := dial.Read(buf[:])
 
-		//println(string(buf[:n]))
 		if strings.Contains(string(buf[:n]), "SSH") {
 			fmt.Printf(host + "\n")
 			_, _ = file.WriteString("[SSH]" + host + ":" + port + "\n")
@@ -98,7 +102,7 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		_ = dial.Close()
 	} else if protocol == "mysql" {
 		dial, _ := net.Dial("tcp", host+":"+port)
-
+		_ = dial.SetReadDeadline(time.Now().Add(timeout))
 		buf := [512]byte{}
 		n, _ := dial.Read(buf[:])
 
@@ -111,7 +115,7 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		_ = dial.Close()
 	} else {
 		println("无此协议")
-		return nil
 	}
+	threads-- // 线程-1
 	return nil
 }
