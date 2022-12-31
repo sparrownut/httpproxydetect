@@ -19,7 +19,7 @@ func main() {
 		Name:      "protocaldetect",
 		Usage:     "judg protocol\n protocol:\nhttp\nssh\nmysql", // 这里写协议
 		UsageText: "lazy to write...",
-		Version:   "0.4.7",
+		Version:   "0.4.8",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "8080", Usage: "port", Required: true},
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "ssh", Usage: "protocol", Required: true},
@@ -76,7 +76,7 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		if req.Err == nil {
 			ret := goreq.Do(req)
 			if strings.Contains(ret.Text, host) {
-				println(proxyStr) // 输出
+				fmt.Printf(proxyStr + "\n") // 输出
 				_, _ = file.WriteString(proxyStr + "\n")
 
 			}
@@ -91,7 +91,7 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 
 		//println(string(buf[:n]))
 		if strings.Contains(string(buf[:n]), "SSH") {
-			println(host)
+			fmt.Printf(host + "\n")
 			_, _ = file.WriteString("[SSH]" + host + ":" + port + "\n")
 
 		}
@@ -104,13 +104,13 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 
 		//println(string(buf[:n]))
 		if strings.Contains(string(buf[:n]), "mysql") {
-			println(host)
+			fmt.Printf(host + "\n")
 			_, _ = file.WriteString("[MYSQL]" + host + ":" + port + "\n")
 
 		}
 		_ = dial.Close()
 	} else {
-		fmt.Printf("无此协议")
+		println("无此协议")
 		return nil
 	}
 	return nil
