@@ -74,7 +74,6 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		println(fmt.Sprintf("当前进程%v个", threads))
 	}
 	timeout := 2 * time.Second
-
 	if protocol == "http" {
 
 		proxyStr := "http://" + host + ":" + port
@@ -91,7 +90,11 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		}
 
 	} else if protocol == "ssh" {
+	redialSSH:
 		dial, connecterr := net.Dial("tcp", host+":"+port)
+		if dial == nil {
+			goto redialSSH
+		}
 		_ = dial.SetReadDeadline(time.Now().Add(timeout))
 		if connecterr != nil {
 		}
@@ -105,7 +108,11 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		}
 		_ = dial.Close()
 	} else if protocol == "mysql" {
+	redialMYSQL:
 		dial, _ := net.Dial("tcp", host+":"+port)
+		if dial == nil {
+			goto redialMYSQL
+		}
 		_ = dial.SetReadDeadline(time.Now().Add(timeout))
 		buf := [64]byte{}
 		n, _ := dial.Read(buf[:])
