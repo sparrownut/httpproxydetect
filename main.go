@@ -21,7 +21,7 @@ func main() {
 		Name:      "protocaldetect",
 		Usage:     "judg protocol\n protocol:\nhttp\nssh\nmysql\nshiro\nyonyou", // 这里写协议
 		UsageText: "lazy to write...",
-		Version:   "0.4.8",
+		Version:   "0.5.8",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "8080", Usage: "port", Required: true},
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "ssh", Usage: "protocol", Required: true},
