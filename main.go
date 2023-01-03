@@ -21,7 +21,7 @@ func main() {
 		Name:      "protocaldetect",
 		Usage:     "judg protocol\n protocol:\nhttp\nssh\nmysql\nshiro\nyonyou", // 这里写协议
 		UsageText: "lazy to write...",
-		Version:   "0.5.8",
+		Version:   "0.5.9",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "8080", Usage: "port", Required: true},
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "ssh", Usage: "protocol", Required: true},
@@ -157,22 +157,17 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		host = strings.ReplaceAll(host, "https://", "") //过滤http前缀
 		host = strings.ReplaceAll(host, "http://", "")
 
+		suffix := "/servlet/~ic/bsh.servlet.BshServlet"
 		if strings.Contains(host, ":") { // 如果输入有端口
-			req = goreq.Get(fmt.Sprintf("http://%v", host)).SetClient(client)
+			req = goreq.Get(fmt.Sprintf("http://%v%v", host, suffix)).SetClient(client)
 		} else {
-			if port == "80" { //判断加密
-				req = goreq.Get(fmt.Sprintf("http://%v", host)).SetClient(client)
-			} else if port == "443" {
-				req = goreq.Get(fmt.Sprintf("http://%v", host)).SetClient(client)
-			} else {
-				req = goreq.Get(fmt.Sprintf("http://%v:%v", host, port)).SetClient(client)
-			}
+			req = goreq.Get(fmt.Sprintf("http://%v:%v%v", host, port, suffix)).SetClient(client)
 		}
 		ret := goreq.Do(req)
 		if DBG {
 			println(ret.Text)
 		}
-		if strings.Contains(strings.ToUpper(strings.ReplaceAll(ret.Text, " ", "")), "YONYOUNC") {
+		if strings.Contains(strings.ToUpper(strings.ReplaceAll(ret.Text, " ", "")), "BEANSHELLTESTSERVLET") {
 			fmt.Printf("%v\n", host)
 		}
 
