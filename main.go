@@ -90,10 +90,9 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		}
 
 	} else if protocol == "ssh" {
-	redialSSH:
 		dial, connecterr := net.Dial("tcp", host+":"+port)
 		if dial == nil {
-			goto redialSSH
+			return nil
 		}
 		_ = dial.SetReadDeadline(time.Now().Add(timeout))
 		if connecterr != nil {
@@ -108,10 +107,9 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		}
 		_ = dial.Close()
 	} else if protocol == "mysql" {
-	redialMYSQL:
 		dial, _ := net.Dial("tcp", host+":"+port)
 		if dial == nil {
-			goto redialMYSQL
+			return nil
 		}
 		_ = dial.SetReadDeadline(time.Now().Add(timeout))
 		buf := [64]byte{}
