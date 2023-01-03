@@ -154,8 +154,8 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 		client := goreq.NewClient()
 		var req *goreq.Request
 
-		host = strings.ReplaceAll(host, "http://", "")
 		host = strings.ReplaceAll(host, "https://", "") //过滤http前缀
+		host = strings.ReplaceAll(host, "http://", "")
 
 		if strings.Contains(host, ":") { // 如果输入有端口
 			req = goreq.Get(fmt.Sprintf("http://%v", host)).SetClient(client)
