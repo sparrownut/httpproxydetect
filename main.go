@@ -12,6 +12,7 @@ import (
 
 var DBG bool
 var threads = 0
+var threadsMax = 500
 
 func main() {
 	port := "8080"
@@ -24,6 +25,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "8080", Usage: "port", Required: true},
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "ssh", Usage: "protocol", Required: true},
+			&cli.IntFlag{Name: "threads", Aliases: []string{"T"}, Destination: &threadsMax, Value: 500, Usage: "DBG MOD", Required: false},
 			&cli.BoolFlag{Name: "DBG", Aliases: []string{"D"}, Destination: &DBG, Value: false, Usage: "DBG MOD", Required: false},
 		},
 		HideHelpCommand: true,
@@ -43,6 +45,7 @@ func main() {
 	//fmt.Printf(os.Args[1])
 
 }
+
 func do(port string, protocol string) error {
 	file, _ := os.OpenFile("output.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	defer func(file *os.File) {
@@ -52,11 +55,17 @@ func do(port string, protocol string) error {
 start: // 在这里循环
 	host := ""
 	_, _ = fmt.Scanln(&host)
-
-	go func() {
-
-		_ = dofunc(port, protocol, file, host)
-	}()
+waitToRun:
+	if DBG {
+		println(fmt.Sprintf("当前进程%v个", threads))
+	}
+	if threads <= threadsMax {
+		go func() {
+			_ = dofunc(port, protocol, file, host)
+		}()
+	} else {
+		goto waitToRun
+	}
 	goto start
 }
 func dofunc(port string, protocol string, file *os.File, host string) error {
@@ -70,9 +79,6 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 			}
 		}
 	}() //清理线程计数 处理异常
-	if DBG {
-		println(fmt.Sprintf("当前进程%v个", threads))
-	}
 	timeout := 2 * time.Second
 	if protocol == "http" {
 
