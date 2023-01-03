@@ -18,7 +18,7 @@ func main() {
 	protocol := "http"
 	app := &cli.App{
 		Name:      "protocaldetect",
-		Usage:     "judg protocol\n protocol:\nhttp\nssh\nmysql", // 这里写协议
+		Usage:     "judg protocol\n protocol:\nhttp\nssh\nmysql\nshiro\nyonyou", // 这里写协议
 		UsageText: "lazy to write...",
 		Version:   "0.4.8",
 		Flags: []cli.Flag{
@@ -120,6 +120,56 @@ func dofunc(port string, protocol string, file *os.File, host string) error {
 
 		}
 		_ = dial.Close()
+	} else if protocol == "shiro" {
+		if DBG {
+			println("shiro MOD")
+		}
+		client := goreq.NewClient()
+		var req *goreq.Request
+		if port == "80" { //判断加密
+			req = goreq.Get(fmt.Sprintf("http://%v", host)).SetClient(client)
+		} else if port == "443" {
+			req = goreq.Get(fmt.Sprintf("https://%v", host)).SetClient(client)
+		} else {
+			req = goreq.Get(fmt.Sprintf("http://%v:%v", host, port)).SetClient(client)
+		}
+		ret := goreq.Do(req)
+		if DBG {
+			println(ret.Text)
+		}
+		if strings.Contains(ret.Header.Get("Set-Cookie"), "rememberMe") {
+			fmt.Printf("%v\n", host)
+		}
+
+	} else if protocol == "yonyou" {
+		if DBG {
+			println("yonyou MOD")
+		}
+		client := goreq.NewClient()
+		var req *goreq.Request
+
+		host = strings.ReplaceAll(host, "http://", "")
+		host = strings.ReplaceAll(host, "https://", "") //过滤http前缀
+
+		if strings.Contains(host, ":") { // 如果输入有端口
+			req = goreq.Get(fmt.Sprintf("http://%v", host)).SetClient(client)
+		} else {
+			if port == "80" { //判断加密
+				req = goreq.Get(fmt.Sprintf("http://%v", host)).SetClient(client)
+			} else if port == "443" {
+				req = goreq.Get(fmt.Sprintf("http://%v", host)).SetClient(client)
+			} else {
+				req = goreq.Get(fmt.Sprintf("http://%v:%v", host, port)).SetClient(client)
+			}
+		}
+		ret := goreq.Do(req)
+		if DBG {
+			println(ret.Text)
+		}
+		if strings.Contains(strings.ToUpper(strings.ReplaceAll(ret.Text, " ", "")), "YONYOUNC") {
+			fmt.Printf("%v\n", host)
+		}
+
 	} else {
 		println("无此协议")
 	}
